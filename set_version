@@ -420,11 +420,17 @@ if __name__ == '__main__':
     parser.add_argument('--fromfile',
                         help='detect version based on the '
                              'file contents and regex')
+    parser.add_argument('--skip-change-pkgrel',
+                        choices=['yes', 'no'], default='no',
+                        help='skip the change of the pkgrel variable in PKGBUILD '
+                             '(only relevant for Arch builds)')
     args = vars(parser.parse_args())
 
     version = args['version']
 
     outdir = args['outdir']
+
+    skip_change_pkgrel = bool(args['skip_change_pkgrel'] == 'yes')
 
     if not outdir:
         print("no outdir specified")
@@ -507,4 +513,5 @@ if __name__ == '__main__':
         _replace_tag(filename, "md5sums", "('SKIP')")
         _replace_tag(filename, "sha256sums", "('SKIP')")
         _replace_tag(filename, "pkgver", version)
-        _replace_tag(filename, "pkgrel", "0")
+        if not skip_change_pkgrel:
+            _replace_tag(filename, "pkgrel", "0")
